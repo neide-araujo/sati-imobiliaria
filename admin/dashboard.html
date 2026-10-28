@@ -1,0 +1,236 @@
+
+<!DOCTYPE html>
+<html lang="pt-BR">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+    <title>Painel | Marcos Moscoso</title>
+
+    <link rel="stylesheet" href="admin.css">
+
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+
+    <link
+        href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700&display=swap"
+        rel="stylesheet">
+</head>
+
+<body>
+
+    <!-- MENU LATERAL -->
+    <aside class="sidebar">
+
+        <div class="logo-admin">
+            <span>Marcos Moscoso</span>
+        </div>
+
+        <nav>
+            <a href="dashboard.html" class="menu-ativo">
+                🏠 Dashboard
+            </a>
+
+            <a href="../imoveis.html">
+                🏡 Imóveis
+            </a>
+
+            <a href="#">
+                👥 Clientes
+            </a>
+
+            <a href="leads.html">
+                📩 Leads
+            </a>
+
+            <a href="#">
+                📅 Visitas
+            </a>
+
+            <a href="#">
+                📄 Contratos
+            </a>
+
+            <a href="#">
+                💰 Financeiro
+            </a>
+        </nav>
+
+        <a href="../index.html" class="voltar-site">
+            ← Voltar para o site
+        </a>
+
+    </aside>
+
+
+    <!-- CONTEÚDO PRINCIPAL -->
+    <main class="conteudo">
+
+        <!-- CABEÇALHO -->
+        <header class="topo">
+
+            <div>
+                <span>PAINEL ADMINISTRATIVO</span>
+
+                <h1>Olá, Marcos!</h1>
+
+                <p>
+                    Gerencie seus imóveis e seus clientes.
+                </p>
+            </div>
+
+            <div class="perfil">
+
+                <div class="avatar">
+                    M
+                </div>
+
+                <div>
+                    <strong>Marcos Moscoso</strong>
+                    <small>Corretor de imóveis</small>
+                </div>
+
+            </div>
+
+        </header>
+
+
+        <!-- CARDS DE RESUMO -->
+        <section class="resumo">
+
+            <div class="resumo-card">
+                <span class="icone">👥</span>
+
+                <div>
+                    <p>Clientes</p>
+                    <h2>28</h2>
+                </div>
+            </div>
+
+            <div class="resumo-card">
+                <span class="icone">📩</span>
+
+                <div>
+                    <p>Novos Leads</p>
+                    <h2 id="totalLeads">0</h2>
+                </div>
+            </div>
+
+            <div class="resumo-card">
+                <span class="icone">📅</span>
+
+                <div>
+                    <p>Visitas</p>
+                    <h2>05</h2>
+                </div>
+            </div>
+
+        </section>
+
+
+        <!-- AÇÕES RÁPIDAS -->
+        <section class="acoes">
+
+            <div class="titulo">
+                <h2>Ações rápidas</h2>
+
+                <p>
+                    Gerencie seu negócio de forma rápida.
+                </p>
+            </div>
+
+            <div class="acoes-grid">
+
+                <a href="cadastrar-imovel.html" class="acao">
+                    <span>➕</span>
+
+                    <div>
+                        <strong>Cadastrar imóvel</strong>
+
+                        <p>
+                            Adicione um novo imóvel.
+                        </p>
+                    </div>
+                </a>
+
+
+                <a href="#" class="acao">
+                    <span>📸</span>
+
+                    <div>
+                        <strong>Adicionar fotos</strong>
+
+                        <p>
+                            Atualize as fotos dos imóveis.
+                        </p>
+                    </div>
+                </a>
+
+
+                <a href="#" class="acao">
+                    <span>👤</span>
+
+                    <div>
+                        <strong>Novo cliente</strong>
+
+                        <p>
+                            Cadastre um novo cliente.
+                        </p>
+                    </div>
+                </a>
+
+
+                <a href="leads.html" class="acao">
+                    <span>📊</span>
+
+                    <div>
+                        <strong>Ver leads</strong>
+
+                        <p>
+                            Confira seus novos contatos.
+                        </p>
+                    </div>
+                </a>
+
+            </div>
+
+        </section>
+
+
+        <!-- IMÓVEIS RECENTES -->
+        <section class="recentes">
+
+            <div class="titulo">
+                <h2>Imóveis recentes</h2>
+
+                <a href="../imoveis.html">Ver todos</a>
+            </div>
+
+            <div class="tabela">
+
+                <div class="linha cabecalho">
+                    <span>Imóvel</span>
+                    <span>Localização</span>
+                    <span>Tipo</span>
+                    <span>Valor</span>
+                    <span>Status</span>
+                    <span>Ação</span>
+                </div>
+
+                <div id="listaImoveis">
+                    <div class="linha">
+                        <span>Carregando imóveis...</span>
+                    </div>
+                </div>
+
+            </div>
+
+        </section>
+
+    </main>
+
+    <script src="admin.js"></script>
+
+</body>
+</html>

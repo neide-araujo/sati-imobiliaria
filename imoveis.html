@@ -1,0 +1,157 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+    <title>Casa no Umarizal | Marcos Mocoso</title>
+
+    <link rel="stylesheet" href="style.css">
+</head>
+
+<body>
+
+    <!-- MENU -->
+    <header>
+        <nav class="menu">
+            <ul>
+                <li><a href="index.html">Início</a></li>
+                <li><a href="imoveis.html">Imóveis</a></li>
+                <li><a href="sobre.html">Sobre</a></li>
+                
+            </ul>
+    </nav>
+</header>
+
+    <main class="detalhes-imovel">
+
+    <div class="galeria-imovel">
+
+        <img
+            id="fotoPrincipal"
+            class="foto-principal-imovel"
+            src="img/casa-1.jpg"
+            alt="Imóvel"
+        >
+
+        <div
+            class="miniaturas-imovel"
+            id="listaMiniaturas">
+        </div>
+        
+        <!-- MODAL DE ZOOM DA FOTO -->
+<div id="modalFoto" class="modal-foto">
+    <button id="fecharModal" class="fechar-modal">&times;</button>
+
+    <button id="fotoAnterior" class="seta-foto esquerda">
+        &#10094;
+    </button>
+
+    <img id="fotoZoom" src="" alt="Foto ampliada">
+
+    <button id="proximaFoto" class="seta-foto direita">
+        &#10095;
+    </button>
+</div>
+    </div>
+
+
+    <div class="informacoes-detalhe">
+
+        <span
+            id="tipoImovel"
+            class="tipo-imovel">
+            CASA
+        </span>
+
+        <h1 id="tituloImovel">
+            Carregando imóvel...
+        </h1>
+
+        <p
+            id="descricaoImovel"
+            class="descricao-detalhe">
+            Carregando informações...
+        </p>
+
+
+        <div class="caracteristicas">
+
+            <div>
+                <strong id="quartosImovel">0</strong>
+                <span>Quartos</span>
+            </div>
+
+            <div>
+                <strong id="banheirosImovel">0</strong>
+                <span>Banheiros</span>
+            </div>
+
+            <div>
+                <strong id="vagasImovel">0</strong>
+                <span>Vagas</span>
+            </div>
+
+        </div>
+
+
+        <h2
+            id="precoImovel"
+            class="valor">
+            Consulte o valor
+        </h2>
+
+
+                <a
+                
+            href="index.html#contato"
+            class="botao-interesse">
+            Tenho interesse
+        </a>
+            
+
+            <a
+            href="index.html#imoveis"
+            class="voltar-imoveis">
+            ← Voltar para imóveis
+        </a>
+
+    </div>
+
+</main>
+
+<script src="java.js/imoveis.js"></script>
+
+
+  <!--  ABAIXO DAS FOTOS — COLOCA OS IDs NAS INFOS TAMBÉM! 
+   
+            
+ <!- RODAPÉ -->
+    <footer>
+
+        <div class="footer-conteudo">
+
+            <p>
+                Telefone: (91) 9xxxx-xxxx |
+                E-mail: contato@imobiliaria.com
+            </p>
+
+            
+            <p class="lgpd-texto">
+                🔒 Seus dados estão seguros conosco.
+                Tratamos suas informações pessoais de acordo
+                com a <strong>Lei Geral de Proteção de Dados (LGPD)</strong>.
+            </p>
+
+            <p class="copyright">
+                &copy; 2026 Imobiliária — Todos os direitos reservados
+            </p>
+
+        </div>
+
+    </footer>
+
+</body>
+
+</html>

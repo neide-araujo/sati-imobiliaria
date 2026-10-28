@@ -1,0 +1,408 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+
+<head>
+
+    <meta charset="UTF-8">
+
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+    <title>Cadastrar Imóvel | Marcos Moscoso</title>
+
+    <link rel="stylesheet" href="admin.css">
+
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700&display=swap"
+        rel="stylesheet">
+
+</head>
+
+<body>
+
+    <!-- MENU LATERAL -->
+
+    <aside class="sidebar">
+
+        <div class="logo-admin">
+
+            <img src="../img/logo.png" alt="Logo da Imobiliária">
+
+        
+
+        </div>
+
+        <nav>
+
+            <a href="dashboard.html">
+                🏠 Dashboard
+            </a>
+
+            <a href="cadastrar-imovel.html" class="menu-ativo">
+                🏡 Imóveis
+            </a>
+
+            <a href="#">
+                👥 Clientes
+            </a>
+
+            <a href="#">
+                📩 Leads
+            </a>
+
+            <a href="#">
+                📅 Visitas
+            </a>
+
+            <a href="#">
+                📄 Contratos
+            </a>
+
+            <a href="#">
+                💰 Financeiro
+            </a>
+
+        </nav>
+
+        <a href="../index.html" class="voltar-site">
+            ← Voltar para o site
+        </a>
+
+    </aside>
+
+
+    <!-- CONTEÚDO -->
+
+    <main class="conteudo">
+
+        <header class="topo">
+
+            <div>
+
+                <span>GERENCIAMENTO DE IMÓVEIS</span>
+
+                <h1>Cadastrar imóvel</h1>
+
+                <p>
+                    Adicione as informações e fotos do imóvel.
+                </p>
+
+            </div>
+
+        </header>
+
+
+        <!-- FORMULÁRIO -->
+
+        <section class="form-imovel">
+
+            <form id="formImovel">
+
+
+                <!-- INFORMAÇÕES PRINCIPAIS -->
+
+                <div class="bloco-form">
+
+                    <h2>Informações do imóvel</h2>
+
+
+                    <div class="campo-admin">
+
+                        <label for="titulo">
+                            Nome do imóvel
+                        </label>
+
+                        <input
+                            type="text"
+                            id="titulo"
+                            placeholder="Ex.: Residencial Independência"
+                            required
+                        >
+
+                    </div>
+
+
+                    <div class="linha-form">
+
+                        <div class="campo-admin">
+
+                            <label for="tipo">
+                                Tipo de imóvel
+                            </label>
+
+                            <select id="tipo" required>
+
+                                <option value="">
+                                    Selecione
+                                </option>
+
+                                <option value="Casa">
+                                    Casa
+                                </option>
+
+                                <option value="Apartamento">
+                                    Apartamento
+                                </option>
+
+                                <option value="Terreno">
+                                    Terreno
+                                </option>
+
+                                <option value="Sala comercial">
+                                    Sala comercial
+                                </option>
+
+                            </select>
+
+                        </div>
+
+
+                        <div class="campo-admin">
+
+                            <label for="negocio">
+                                Finalidade
+                            </label>
+
+                            <select id="negocio" required>
+
+                                <option value="">
+                                    Selecione
+                                </option>
+
+                                <option value="Venda">
+                                    Venda
+                                </option>
+
+                                <option value="Aluguel">
+                                    Aluguel
+                                </option>
+
+                            </select>
+
+                        </div>
+
+                    </div>
+
+
+                    <div class="linha-form">
+
+                        <div class="campo-admin">
+
+                            <label for="preco">
+                                Valor
+                            </label>
+                            <input type="number"
+                            step="0.01" 
+                            id="preco" 
+                            name="preco" 
+                            placeholder="0.00" required>
+
+
+                        </div>
+
+
+                        <div class="campo-admin">
+
+                            <label for="cidade">
+                                Cidade
+                            </label>
+
+                            <input
+                                type="text"
+                                id="cidade"
+                                placeholder="Ex.: Belém"
+                                required
+                            >
+
+                        </div>
+
+
+                        <div class="campo-admin">
+
+                            <label for="bairro">
+                                Bairro
+                            </label>
+
+                            <input
+                                type="text"
+                                id="bairro"
+                                placeholder="Ex.: Marco"
+                            >
+
+                        </div>
+
+                    </div>
+
+                </div>
+
+
+                <!-- CARACTERÍSTICAS -->
+
+                <div class="bloco-form">
+
+                    <h2>Características</h2>
+
+                    <div class="linha-form">
+
+                        <div class="campo-admin">
+
+                            <label for="quartos">
+                                Quartos
+                            </label>
+
+                            <input
+                                type="number"
+                                id="quartos"
+                                min="0"
+                                placeholder="0"
+                            >
+
+                        </div>
+
+
+                        <div class="campo-admin">
+
+                            <label for="banheiros">
+                                Banheiros
+                            </label>
+
+                            <input
+                                type="number"
+                                id="banheiros"
+                                min="0"
+                                placeholder="0"
+                            >
+
+                        </div>
+
+
+                        <div class="campo-admin">
+
+                            <label for="vagas">
+                                Vagas
+                            </label>
+
+                            <input
+                                type="number"
+                                id="vagas"
+                                min="0"
+                                placeholder="0"
+                            >
+
+                        </div>
+
+                    </div>
+
+
+                  <div class="campo-admin">
+
+                        <label for="descricao">
+                            Descrição
+                        </label>
+
+                        <textarea
+                            id="descricao"
+                            rows="5"
+                            placeholder="Descreva o imóvel..."
+                        ></textarea>
+
+                    </div>
+
+                </div>
+
+
+                <!-- FOTOS -->
+
+                <div class="bloco-form">
+
+                    <h2>Fotos do imóvel</h2>
+
+                    <p class="texto-ajuda">
+                        Selecione uma ou várias fotos do imóvel.
+                    </p>
+
+
+                    <label class="upload-fotos">
+
+                        📸
+
+                        <strong>
+                            Selecionar fotos
+                        </strong>
+
+                        <span>
+                            Clique aqui para escolher as imagens
+                        </span>
+
+                        <input
+                            type="file"
+                            id="fotos"
+                            accept="image/*"
+                            multiple
+                        >
+
+                    </label>
+
+
+                    <div id="previewFotos"
+                        class="preview-fotos">
+                    </div>
+
+                </div>
+
+
+                <!-- DESTAQUE -->
+
+                <div class="bloco-form destaque-form">
+
+                    <label class="checkbox">
+
+                        <input
+                            type="checkbox"
+                            id="destaque"
+                        >
+
+                        <span>
+                            ⭐ Colocar este imóvel em destaque
+                        </span>
+
+                    </label>
+
+                </div>
+
+
+                <!-- BOTÕES -->
+
+                <div class="botoes-form">
+
+                    <a
+                        href="dashboard.html"
+                        class="botao-cancelar"
+                    >
+                        Cancelar
+                    </a>
+
+                    <button
+                        type="submit"
+                        class="botao-salvar"
+                    >
+                        Salvar imóvel
+                    </button>
+
+                </div>
+
+
+            </form>
+
+        </section>
+
+    </main>
+
+
+    <script src="admin.js"></script>
+
+</body>
+
+</html>
