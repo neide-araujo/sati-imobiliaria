@@ -53,7 +53,7 @@ async function carregarImoveisHome() {
             const foto =
                 imovel.fotos &&
                 imovel.fotos.length > 0
-                    ? `${API_URL}/${imovel.fotos[0]}`
+             ? `${API_IMOVEIS_URL}/${imovel.fotos[0]}`
                     : 'img/casa-1.jpg';
 
             const card = document.createElement('div');
