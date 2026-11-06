@@ -10,8 +10,8 @@ import uuid
 # ====================================================
 # CONFIGURAÇÃO
 # ====================================================
+load_dotenv(override=True)
 
-load_dotenv()
 
 app = Flask(__name__)
 CORS(app)
@@ -25,6 +25,7 @@ UPLOAD_FOLDER = os.path.join(
 )
 
 UPLOAD_FOLDER = os.path.abspath(UPLOAD_FOLDER)
+print("PASTA DAS FOTOS:", UPLOAD_FOLDER)
 
 os.makedirs(UPLOAD_FOLDER, exist_ok=True)
 
@@ -591,8 +592,6 @@ def listar_leads():
             cursor.close()
         if conexao:
             conexao.close()
-    # ====================================================
-# INICIAR SERVIDOR
-# ====================================================
+    
 if __name__ == "__main__":
     app.run(debug=True)
