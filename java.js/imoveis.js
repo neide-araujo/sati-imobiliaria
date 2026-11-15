@@ -1,4 +1,4 @@
- const API_IMOVEIS_URL = 'http://127.0.0.1:5000';
+ const API_IMOVEIS_URL = 'https://sati-imobiliaria-3.onrender.com';
  
 
 // =====================================================
@@ -51,10 +51,11 @@ async function carregarImoveisHome() {
         imoveis.forEach(imovel => {
 
             const foto =
-                imovel.fotos &&
-                imovel.fotos.length > 0
-             ? `${API_IMOVEIS_URL}/${imovel.fotos[0]}`
-                    : 'img/casa-1.jpg';
+       imovel.fotos && imovel.fotos.length > 0
+        ? (imovel.fotos[0].startsWith('http')
+            ? imovel.fotos[0]
+            : `${API_IMOVEIS_URL}/${imovel.fotos[0]}`)
+        : 'img/casa-1.jpg';
 
             const card = document.createElement('div');
 
@@ -264,9 +265,16 @@ async function carregarDetalhesImovel() {
         // =================================================
         // FUNÇÃO PARA PEGAR O CAMINHO DA FOTO
         // =================================================
-        function caminhoFoto(indice) {
-        return `${API_IMOVEIS_URL}/${imovel.fotos[indice]}`;
-     }
+         function caminhoFoto(indice) {
+
+    const foto = imovel.fotos[indice];
+
+    if (foto.startsWith('http')) {
+        return foto;
+    }
+
+    return `${API_IMOVEIS_URL}/${foto}`;
+}
 
         // =================================================
         // MOSTRAR FOTO PRINCIPAL
