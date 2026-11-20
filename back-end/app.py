@@ -12,7 +12,7 @@ import cloudinary.uploader
 # ====================================================
 # CONFIGURAÇÃO
 # ====================================================
-load_dotenv(override=True)
+load_dotenv(override=False)
 
 
 app = Flask(__name__)
