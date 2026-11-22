@@ -27,12 +27,18 @@ SENHA_ADMIN = os.getenv("ADMIN_SENHA", "")
 
 
 # Configuração do Cloudinary para armazenar as novas fotos
+print("CLOUD NAME:", os.getenv("CLOUDINARY_CLOUD_NAME"))
+print("API KEY configurada:", bool(os.getenv("CLOUDINARY_API_KEY")))
+print("API SECRET configurado:", bool(os.getenv("CLOUDINARY_API_SECRET")))
+
 cloudinary.config(
+
     cloud_name=os.getenv("CLOUDINARY_CLOUD_NAME"),
     api_key=os.getenv("CLOUDINARY_API_KEY"),
     api_secret=os.getenv("CLOUDINARY_API_SECRET"),
     secure=True
 )
+
 
 
 # Pasta onde as fotos serão salvas
