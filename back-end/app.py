@@ -306,7 +306,8 @@ def cadastrar_imovel():
             data = {
                 "key": chave_api,
                 "image": arquivo
-            }
+            },
+            timeout=15
         )
 
         dados = resposta.json()
