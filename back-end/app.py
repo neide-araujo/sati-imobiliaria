@@ -5,8 +5,8 @@ from werkzeug.utils import secure_filename
 import mysql.connector
 import os
 import uuid
-import cloudinary
-import cloudinary.uploader
+import requests
+
 
 
 # ====================================================
@@ -27,17 +27,8 @@ SENHA_ADMIN = os.getenv("ADMIN_SENHA", "")
 
 
 # Configuração do Cloudinary para armazenar as novas fotos
-print("CLOUD NAME:", os.getenv("CLOUDINARY_CLOUD_NAME"))
-print("API KEY configurada:", bool(os.getenv("CLOUDINARY_API_KEY")))
-print("API SECRET configurado:", bool(os.getenv("CLOUDINARY_API_SECRET")))
 
-cloudinary.config(
 
-    cloud_name=os.getenv("CLOUDINARY_CLOUD_NAME"),
-    api_key=os.getenv("CLOUDINARY_API_KEY"),
-    api_secret=os.getenv("CLOUDINARY_API_SECRET"),
-    secure=True
-)
 
 
 
@@ -305,20 +296,27 @@ def cadastrar_imovel():
 
 
                 # Enviar a foto para o Cloudinary
-                resultado_upload = cloudinary.uploader.upload(
-                    arquivo,
-                    folder="sati/imoveis",
-                    resource_type="image"
-                )
+                import requests
 
-                # Guardar no banco o endereço público da foto
-                caminho_banco = resultado_upload.get("secure_url")
+        url_imgbb = "https://api.imgbb.com/1/upload"
+        chave_api = os.getenv("IMGBB_API_KEY")
 
-                if not caminho_banco:
-                    raise Exception("O Cloudinary não retornou o endereço da foto.")
+        resposta = requests.post(
+            url_imgbb,
+            data = {
+                "key": chave_api,
+                "image": arquivo
+            }
+        )
+
+        dados = resposta.json()
+        caminho_banco = dados["data"]["url"]
+
+        if not caminho_banco:
+            raise Exception("O ImgBB não retornou o endereço da foto.")
 
 
-                sql_foto = """
+            sql_foto = """
                 INSERT INTO fotos_imoveis (
                     imovel_id,
                     caminho
@@ -327,7 +325,7 @@ def cadastrar_imovel():
                 """
 
 
-                cursor.execute(
+            cursor.execute(
                     sql_foto,
                     (
                         novo_id,
@@ -336,7 +334,7 @@ def cadastrar_imovel():
                 )
 
 
-                caminhos_fotos.append(
+            caminhos_fotos.append(
                     caminho_banco
                 )
 
