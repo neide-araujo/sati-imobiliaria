@@ -311,6 +311,7 @@ def cadastrar_imovel():
         )
 
         dados = resposta.json()
+        print("Resposta que veio do ImgBB",dados)
         caminho_banco = dados["data"]["url"]
 
         if not caminho_banco:

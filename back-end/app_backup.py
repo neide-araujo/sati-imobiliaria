@@ -1,30 +1,35 @@
-from flask import Flask, jsonify, request, send_from_directory
+from flask import Flask, jsonify, request, send_from_directory, render_template, session, redirect
 from flask_cors import CORS
 from dotenv import load_dotenv
 from werkzeug.utils import secure_filename
 import mysql.connector
 import os
 import uuid
-import cloudinary
-import cloudinary.uploader
+import requests
+
 
 
 # ====================================================
 # CONFIGURAÇÃO
 # ====================================================
-load_dotenv(override=True)
+load_dotenv(override=False)
 
 
 app = Flask(__name__)
 CORS(app)
 
+# 🔒 CHAVE SECRETA DA SESSÃO — MUITO IMPORTANTE!
+app.secret_key = os.getenv("SECRET_KEY", "mude_para_uma_chave_secreta_segura_no_env")
+
+# 👤 DADOS DE ACESSO DO MARCOS — lidos do arquivo .env
+USUARIO_ADMIN = os.getenv("ADMIN_USUARIO", "marcos")
+SENHA_ADMIN = os.getenv("ADMIN_SENHA", "")
+
+
 # Configuração do Cloudinary para armazenar as novas fotos
-cloudinary.config(
-    cloud_name=os.getenv("CLOUDINARY_CLOUD_NAME"),
-    api_key=os.getenv("CLOUDINARY_API_KEY"),
-    api_secret=os.getenv("CLOUDINARY_API_SECRET"),
-    secure=True
-)
+
+
+
 
 
 # Pasta onde as fotos serão salvas
@@ -67,6 +72,13 @@ def conectar_banco():
 
 
 # ====================================================
+# FUNÇÃO AUXILIAR — VERIFICAR SE ESTÁ LOGADO
+# ====================================================
+def esta_logado():
+    return session.get('logado', False)
+
+
+# ====================================================
 # VERIFICAR EXTENSÃO DA FOTO
 # ====================================================
 
@@ -76,6 +88,56 @@ def arquivo_permitido(nome):
         and nome.rsplit(".", 1)[1].lower()
         in ALLOWED_EXTENSIONS
     )
+
+
+# ====================================================
+# 🚪 SISTEMA DE LOGIN
+# ====================================================
+
+@app.route('/login', methods=['GET', 'POST'])
+def login():
+    if request.method == 'POST':
+        usuario = request.form.get('usuario', '')
+        senha = request.form.get('senha', '')
+        
+        if usuario == USUARIO_ADMIN and senha == SENHA_ADMIN:
+            session['logado'] = True
+            return redirect('/dashboard')
+        
+        return render_template('login.html', erro="Usuário ou senha incorretos!")
+    
+    return render_template('login.html')
+
+
+@app.route('/sair')
+def sair():
+    session.clear()
+    return redirect('/login')
+
+
+# ====================================================
+# 🛡️ ROTAS PROTEGIDAS — PÁGINAS HTML DO ADMIN
+# ====================================================
+
+@app.route('/dashboard')
+def pagina_dashboard():
+    if not esta_logado():
+        return redirect('/login')
+    return render_template('dashboard.html')
+
+
+@app.route('/cadastrar-imovel')
+def pagina_cadastrar_imovel():
+    if not esta_logado():
+        return redirect('/login')
+    return render_template('cadastrar-imovel.html')
+
+
+@app.route('/leads-painel')
+def pagina_leads():
+    if not esta_logado():
+        return redirect('/login')
+    return render_template('leads.html')
 
 
 # ====================================================
@@ -129,7 +191,7 @@ def servir_foto(nome_arquivo):
 
 
 # ====================================================
-# CADASTRAR IMÓVEL + FOTOS
+# CADASTRAR IMÓVEL + FOTOS — continua público pela API
 # ====================================================
 
 @app.route("/imoveis", methods=["POST"])
@@ -234,20 +296,27 @@ def cadastrar_imovel():
 
 
                 # Enviar a foto para o Cloudinary
-                resultado_upload = cloudinary.uploader.upload(
-                    arquivo,
-                    folder="sati/imoveis",
-                    resource_type="image"
-                )
+                import requests
 
-                # Guardar no banco o endereço público da foto
-                caminho_banco = resultado_upload.get("secure_url")
+        url_imgbb = "https://api.imgbb.com/1/upload"
+        chave_api = os.getenv("IMGBB_API_KEY")
 
-                if not caminho_banco:
-                    raise Exception("O Cloudinary não retornou o endereço da foto.")
+        resposta = requests.post(
+            url_imgbb,
+            data = {
+                "key": chave_api,
+                "image": arquivo
+            }
+        )
+
+        dados = resposta.json()
+        caminho_banco = dados["data"]["url"]
+
+        if not caminho_banco:
+            raise Exception("O ImgBB não retornou o endereço da foto.")
 
 
-                sql_foto = """
+            sql_foto = """
                 INSERT INTO fotos_imoveis (
                     imovel_id,
                     caminho
@@ -256,7 +325,7 @@ def cadastrar_imovel():
                 """
 
 
-                cursor.execute(
+            cursor.execute(
                     sql_foto,
                     (
                         novo_id,
@@ -265,7 +334,7 @@ def cadastrar_imovel():
                 )
 
 
-                caminhos_fotos.append(
+            caminhos_fotos.append(
                     caminho_banco
                 )
 
@@ -312,7 +381,7 @@ def cadastrar_imovel():
 
 
 # ====================================================
-# LISTAR IMÓVEIS + FOTOS
+# LISTAR IMÓVEIS — continua público pela API
 # ====================================================
 
 @app.route("/imoveis", methods=["GET"])
@@ -487,11 +556,7 @@ def excluir_imovel(imovel_id):
 
 
 # ====================================================
-# INICIAR SERVIDOR
-# ====================================================
-
-# ====================================================
-# RECEBER CONTATOS DO SITE
+# RECEBER CONTATOS DO SITE — PÚBLICO
 # ====================================================
 
 @app.route('/leads', methods=['POST'])
@@ -553,11 +618,16 @@ def cadastrar_lead():
                 conexao.close()
 
 # ====================================================
-# LISTAR LEADS
+# LISTAR LEADS — 🔒 PROTEGIDA POR LOGIN
 # ====================================================
 
 @app.route('/leads', methods=['GET'])
 def listar_leads():
+    # ⚠️ Verifica se é uma requisição do navegador (página) ou da API
+    # Se vier do navegador sem estar logado, manda pro login
+    if request.headers.get('Accept', '').find('text/html') != -1:
+        if not esta_logado():
+            return redirect('/login')
 
     conexao = None
     cursor = None
@@ -589,6 +659,7 @@ def listar_leads():
             cursor.close()
         if conexao:
             conexao.close()
-    
+
+                
 if __name__ == "__main__":
     app.run(debug=True)
