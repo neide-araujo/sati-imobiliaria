@@ -181,31 +181,31 @@ def teste_banco():
 # DISPONIBILIZAR FOTOS
 # ====================================================
 
-@app.route("/uploads/<path:nome_arquivo>")
-def servir_foto(nome_arquivo):
+    @app.route("/uploads/<path:nome_arquivo>")
+    def servir_foto(nome_arquivo):
 
-    return send_from_directory(
-        app.config["UPLOAD_FOLDER"],
-        nome_arquivo
-    )
+        return send_from_directory(
+            app.config["UPLOAD_FOLDER"],
+            nome_arquivo
+        )
 
 
 # ====================================================
 # CADASTRAR IMÓVEL + FOTOS — continua público pela API
 # ====================================================
+import os
+from flask import request, jsonify
+import requests
 
 @app.route("/imoveis", methods=["POST"])
 def cadastrar_imovel():
-
     conexao = None
     cursor = None
 
     try:
-
         # --------------------------------------------
         # DADOS DO FORMULÁRIO
         # --------------------------------------------
-
         dados = request.form
 
         titulo = dados.get("titulo", "")
@@ -214,170 +214,110 @@ def cadastrar_imovel():
         preco = dados.get("preco", "")
         cidade = dados.get("cidade", "")
         bairro = dados.get("bairro", "")
-        quartos = dados.get("quartos", 0)
-        banheiros = dados.get("banheiros", 0)
-        vagas = dados.get("vagas", 0)
+        quartos = int(dados.get("quartos", 0))
+        banheiros = int(dados.get("banheiros", 0))
+        vagas = int(dados.get("vagas", 0))
         descricao = dados.get("descricao", "")
         destaque = dados.get("destaque", "false").lower() == "true"
-
 
         # --------------------------------------------
         # CONEXÃO
         # --------------------------------------------
-
         conexao = conectar_banco()
-
         cursor = conexao.cursor()
-
 
         # --------------------------------------------
         # CADASTRAR IMÓVEL
         # --------------------------------------------
-
         sql_imovel = """
         INSERT INTO imoveis (
-            titulo,
-            tipo,
-            negocio,
-            preco,
-            cidade,
-            bairro,
-            quartos,
-            banheiros,
-            vagas,
-            descricao,
-            destaque
+            titulo, tipo, negocio, preco, cidade, bairro, 
+            quartos, banheiros, vagas, descricao, destaque
         )
         VALUES (%s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s)
         """
 
-
         valores_imovel = (
-            titulo,
-            tipo,
-            negocio,
-            preco,
-            cidade,
-            bairro,
-            quartos,
-            banheiros,
-            vagas,
-            descricao,
-            destaque
+            titulo, tipo, negocio, preco, cidade, bairro, 
+            quartos, banheiros, vagas, descricao, destaque
         )
 
-
-        cursor.execute(
-            sql_imovel,
-            valores_imovel
-        )
-
-
+        cursor.execute(sql_imovel, valores_imovel)
         novo_id = cursor.lastrowid
-
 
         # --------------------------------------------
         # FOTOS
         # --------------------------------------------
-
-        arquivos = request.files.getlist("fotos")
-
+        lista_arquivos = request.files.getlist("fotos")
         caminhos_fotos = []
 
-
-        for arquivo in arquivos:
-
+        for arquivo in lista_arquivos:
             if arquivo and arquivo.filename:
-
-                if not arquivo_permitido(
-                    arquivo.filename
-                ):
+                if not arquivo_permitido(arquivo.filename):
                     continue
 
+                # Ler os bytes da imagem para enviar ao ImgBB
+                img_bytes = arquivo.read()
 
-                # Enviar a foto para o Cloudinary
-                import requests
+                url_imgbb = "https://api.imgbb.com/1/upload"
+                chave_api = os.getenv("IMGBB_API_KEY")
 
-        url_imgbb = "https://api.imgbb.com/1/upload"
-        chave_api = os.getenv("IMGBB_API_KEY")
+                parametros = {
+                    "key": chave_api
+                }
 
-        resposta = requests.post(
-            url_imgbb,
-            data = {
-                "key": chave_api,
-                "image": arquivo
-            },
-            timeout=15
-        )
+                arquivos_envio = {
+                    "image": img_bytes
+                }
 
-        dados = resposta.json()
-        print("Resposta que veio do ImgBB",dados)
-        caminho_banco = dados["data"]["url"]
-
-        if not caminho_banco:
-            raise Exception("O ImgBB não retornou o endereço da foto.")
-
-
-            sql_foto = """
-                INSERT INTO fotos_imoveis (
-                    imovel_id,
-                    caminho
+                resposta = requests.post(
+                    url_imgbb,
+                    params=parametros,
+                    files=arquivos_envio,
+                    timeout=15
                 )
+                
+                resposta_json = resposta.json()
+                print("Resposta que veio do ImgBB", resposta_json)
+
+                if not resposta_json.get("success"):
+                    raise Exception("Falha ao fazer upload da imagem para o ImgBB.")
+
+                caminho_banco = resposta_json["data"]["url"]
+
+                if not caminho_banco:
+                    raise Exception("O ImgBB não retornou o endereço da foto.")
+
+                sql_foto = """
+                INSERT INTO fotos_imoveis (imovel_id, caminho)
                 VALUES (%s, %s)
                 """
 
-
-            cursor.execute(
-                    sql_foto,
-                    (
-                        novo_id,
-                        caminho_banco
-                    )
-                )
-
-
-            caminhos_fotos.append(
-                    caminho_banco
-                )
-
+                cursor.execute(sql_foto, (novo_id, caminho_banco))
+                caminhos_fotos.append(caminho_banco)
 
         # --------------------------------------------
         # CONFIRMAR
         # --------------------------------------------
-
         conexao.commit()
 
-
         return jsonify({
-
-            "mensagem":
-                "Imóvel cadastrado com sucesso!",
-
-            "id":
-                novo_id,
-
-            "fotos":
-                caminhos_fotos
-
+            "mensagem": "Imóvel cadastrado com sucesso!",
+            "id": novo_id,
+            "fotos": caminhos_fotos
         }), 201
 
-
     except Exception as erro:
-
         if conexao:
             conexao.rollback()
-
 
         return jsonify({
             "erro": str(erro)
         }), 500
 
-
     finally:
-
         if cursor:
             cursor.close()
-
         if conexao:
             conexao.close()
 
