@@ -441,7 +441,12 @@ body {
         min-height: auto;
 
         padding: 15px;
+        
+        border-right: none; 
+
+        border-bottom: 1px solid #252525;
     }
+
 
     .logo-admin {
         margin-bottom: 15px;

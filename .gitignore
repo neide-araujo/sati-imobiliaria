@@ -8,3 +8,11 @@ __pycache__/
 *.py[cod]
 *.log
 .vscode/
+# Pasta de uploads e imagens
+uploads/
+*.jpg
+*.jpeg
+*.png
+
+# Arquivos de backup
+_backup.
