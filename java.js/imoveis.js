@@ -36,22 +36,22 @@ function formatarPreco(preco) {
 // CARREGAR IMÓVEIS NA PÁGINA INICIAL
 // =====================================================
 
-async function carregarImoveisHome() {
-    const container = document.getElementById('cardsImoveis');
+    async function carregarImoveisHome() {
+        const container = document.getElementById('cardsImoveis');
 
-    if (!container) {
-        return;
-    }
+        if (!container) {
+            return;
+        }
 
-    try {
-        const imoveis = await buscarImoveis();
+        try {
+            const imoveis = await buscarImoveis();
 
-        container.innerHTML = '';
+            container.innerHTML = '';
 
-        imoveis.forEach(imovel => {
+            imoveis.forEach(imovel => {
 
-            const foto =
-       imovel.fotos && imovel.fotos.length > 0
+                const foto =
+        imovel.fotos && imovel.fotos.length > 0
         ? (imovel.fotos[0].startsWith('http')
             ? imovel.fotos[0]
             : `${API_IMOVEIS_URL}/${imovel.fotos[0]}`)
@@ -132,9 +132,7 @@ async function carregarImoveisHome() {
 
 async function carregarDetalhesImovel() {
 
-    const parametros =
-        new URLSearchParams(window.location.search);
-
+    const parametros = new URLSearchParams(window.location.search);
     const id = parametros.get('id');
 
     // Se não existe ID, não estamos na página de detalhes
@@ -143,162 +141,90 @@ async function carregarDetalhesImovel() {
     }
 
     try {
-
         const imoveis = await buscarImoveis();
-
-        const imovel = imoveis.find(
-            item => Number(item.id) === Number(id)
-        );
-
-        // =================================================
-        // IMÓVEL NÃO ENCONTRADO
-        // =================================================
+        const imovel = imoveis.find(item => item.id == id);
 
         if (!imovel) {
-
-            console.error('Imóvel não encontrado.');
-
-            const titulo =
-                document.getElementById('tituloImovel');
-
-            if (titulo) {
-                titulo.textContent =
-                    'Imóvel não encontrado.';
-            }
-
+            console.log('Imóvel não encontrado.');
             return;
         }
 
         // =================================================
         // PEGAR ELEMENTOS DA PÁGINA
         // =================================================
+                            // Preencher dados do imóvel
+        const tipo = document.getElementById('tipoImovel');
+        const titulo = document.getElementById('tituloImovel');
+        const descricao = document.getElementById('descricaoImovel');
+        const quartos = document.getElementById('quartosImovel');
+        const banheiros = document.getElementById('banheirosImovel');
+        const vagas = document.getElementById('vagasImovel');
+        const preco = document.getElementById('precoImovel');
+        const fotoPrincipal = document.getElementById('fotoPrincipal');
+        const listaMiniaturas = document.getElementById('listaMiniaturas');
 
-        const tipo =
-            document.getElementById('tipoImovel');
+        if (tipo) tipo.textContent = imovel.tipo || '';
+        if (titulo) titulo.textContent = imovel.titulo || 'Sem título';
+        if (descricao) descricao.textContent = imovel.descricao || 'Descrição não informada';
+        if (quartos) quartos.textContent = imovel.quartos || 0;
+        if (banheiros) banheiros.textContent = imovel.banheiros || 0;
+        if (vagas) vagas.textContent = imovel.vagas || 0;
+        if (preco) preco.textContent = formatarPreco(imovel.preco);
 
-        const titulo =
-            document.getElementById('tituloImovel');
+        // Foto principal
+        if (fotoPrincipal) fotoPrincipal.src = caminhoFoto(0);
 
-        const descricao =
-            document.getElementById('descricaoImovel');
-
-        const quartos =
-            document.getElementById('quartosImovel');
-
-        const banheiros =
-            document.getElementById('banheirosImovel');
-
-        const vagas =
-            document.getElementById('vagasImovel');
-
-        const preco =
-            document.getElementById('precoImovel');
-
-        const fotoPrincipal =
-            document.getElementById('fotoPrincipal');
-
-        const listaMiniaturas =
-            document.getElementById('listaMiniaturas');
-
-        // =================================================
-        // PREENCHER DADOS DO IMÓVEL
-        // =================================================
-
-        if (tipo) {
-            tipo.textContent =
-                imovel.tipo || '';
+        // Miniaturas
+        if (listaMiniaturas) {
+        listaMiniaturas.innerHTML = "";
+        for(let i = 0; i < imovel.fotos.length; i++){
+            const img = document.createElement("img");
+            img.src = caminhoFoto(i);
+            listaMiniaturas.appendChild(img);
         }
-
-        if (titulo) {
-            titulo.textContent =
-                imovel.titulo || 'Sem título';
-        }
-
-        if (descricao) {
-            descricao.textContent =
-                imovel.descricao ||
-                'Descrição não informada.';
-        }
-
-        if (quartos) {
-            quartos.textContent =
-                imovel.quartos || 0;
-        }
-
-        if (banheiros) {
-            banheiros.textContent =
-                imovel.banheiros || 0;
-        }
-
-        if (vagas) {
-            vagas.textContent =
-                imovel.vagas || 0;
-        }
-
-        if (preco) {
-            preco.textContent =
-                formatarPreco(imovel.preco);
         }
 
         // =================================================
         // VERIFICAR FOTOS
         // =================================================
 
-        if (
-            !imovel.fotos ||
-            imovel.fotos.length === 0
-        ) {
-
-            console.log(
-                'Este imóvel não possui fotos.'
-            );
-
+        if (!imovel.fotos || imovel.fotos.length === 0) {
+            console.log('Este imóvel não possui fotos.');
             return;
         }
 
         // =================================================
-        // VARIÁVEIS DA GALERIA
+        // VARIÁVEIS E FUNÇÕES DA GALERIA
         // =================================================
 
         let indiceFotoAtual = 0;
 
-        // =================================================
-        // FUNÇÃO PARA PEGAR O CAMINHO DA FOTO
-        // =================================================
-         function caminhoFoto(indice) {
+        function caminhoFoto(indice) {
+            const foto = imovel?.fotos?.[indice];
 
-    const foto = imovel.fotos[indice];
+            if (!foto) {
+                return '';
+            }
 
-    if (foto.startsWith('http')) {
-        return foto;
-    }
+            if (foto.startsWith('http')) {
+                return foto;
+            }
 
-    return `${API_IMOVEIS_URL}/${foto}`;
-}
-
-        // =================================================
-        // MOSTRAR FOTO PRINCIPAL
-        // =================================================
+            return `${API_IMOVEIS_URL}/${foto}`;
+        }
 
         function mostrarFoto(indice) {
-
             indiceFotoAtual = indice;
 
             if (!fotoPrincipal) {
                 return;
             }
 
-            fotoPrincipal.src =
-                caminhoFoto(indiceFotoAtual);
-
-            fotoPrincipal.alt =
-                `${imovel.titulo || 'Imóvel'} - Foto ${indiceFotoAtual + 1}`;
+            fotoPrincipal.src = caminhoFoto(indiceFotoAtual);
+            fotoPrincipal.alt = `${imovel.titulo || 'Imóvel'} - Foto ${indiceFotoAtual + 1}`;
         }
 
-        // =================================================
-        // MOSTRAR PRIMEIRA FOTO
-        // =================================================
-
+        // Mostrar a primeira foto inicialmente
         mostrarFoto(0);
 
         // =================================================
@@ -306,337 +232,108 @@ async function carregarDetalhesImovel() {
         // =================================================
 
         if (listaMiniaturas) {
-
             listaMiniaturas.innerHTML = '';
 
-            imovel.fotos.forEach(
-                (foto, indice) => {
+            imovel.fotos.forEach((foto, indice) => {
+                const miniatura = document.createElement('img');
 
-                    const miniatura =
-                        document.createElement('img');
+                miniatura.src = caminhoFoto(indice);
+                miniatura.alt = `${imovel.titulo || 'Imóvel'} - Foto ${indice + 1}`;
+                miniatura.className = 'miniatura-imovel';
 
-                    miniatura.src =
-                        caminhoFoto(indice);
-
-                    miniatura.alt =
-                        `${imovel.titulo || 'Imóvel'} - Foto ${indice + 1}`;
-
-                    miniatura.className =
-                        'miniatura-imovel';
-
-                    miniatura.addEventListener('click', () => {
+                miniatura.addEventListener('click', () => {
                     mostrarFoto(indice);
                     abrirFotoAmpliada();
-                     
+                });
 
-                        }
-                    );
-
-                    listaMiniaturas.appendChild(
-                        miniatura
-                    );
-                }
-            );
+                listaMiniaturas.appendChild(miniatura);
+            });
         }
 
         // =================================================
         // ELEMENTOS DO MODAL
         // =================================================
 
-        const modalFoto =
-            document.getElementById('modalFoto');
+        const modalFoto = document.getElementById('modalFoto');
+        const fotoZoom = document.getElementById('fotoZoom');
+        const fecharModal = document.getElementById('fecharModal');
+        const fotoAnterior = document.getElementById('fotoAnterior');
+        const proximaFoto = document.getElementById('proximaFoto');
 
-        const fotoZoom =
-            document.getElementById('fotoZoom');
+        function abrirFotoAmpliada() {
+            if (!modalFoto || !fotoZoom) {
+                return;
+            }
 
-        const fecharModal =
-            document.getElementById('fecharModal');
+            fotoZoom.src = caminhoFoto(indiceFotoAtual);
+            fotoZoom.alt = `${imovel.titulo || 'Imóvel'} - Foto ${indiceFotoAtual + 1}`;
 
-        const fotoAnterior =
-            document.getElementById('fotoAnterior');
-
-        const proximaFoto =
-            document.getElementById('proximaFoto');
-
-            function abrirFotoAmpliada() {
-    if (!modalFoto || !fotoZoom) {
-        return;
-    }
-
-    fotoZoom.src = caminhoFoto(indiceFotoAtual);
-    fotoZoom.alt =
-        `${imovel.titulo || 'Imóvel'} - Foto ${indiceFotoAtual + 1}`;
-
-    modalFoto.classList.add('ativo');
-    document.body.style.overflow = 'hidden';
-    }
-
-        // =================================================
-        // ABRIR FOTO AMPLIADA
-        // =================================================
-
-        if (
-            fotoPrincipal &&
-            modalFoto &&
-            fotoZoom
-        ) {
-
-            fotoPrincipal.addEventListener(
-                'click',
-                () => {
-
-                    fotoZoom.src =
-                        caminhoFoto(indiceFotoAtual);
-
-                    fotoZoom.alt =
-                        `${imovel.titulo || 'Imóvel'} - Foto ampliada`;
-
-                    modalFoto.classList.add('ativo');
-
-                    document.body.style.overflow =
-                        'hidden';
-                }
-            );
+            modalFoto.classList.add('ativo');
+            document.body.style.overflow = 'hidden';
         }
 
-        // =================================================
+        // ABRIR FOTO AMPLIADA AO CLICAR NA PRINCIPAL
+        if (fotoPrincipal && modalFoto && fotoZoom) {
+            fotoPrincipal.addEventListener('click', () => {
+                abrirFotoAmpliada();
+            });
+        }
+
         // FECHAR MODAL
-        // =================================================
-
         function fecharZoom() {
-
             if (modalFoto) {
-
-                modalFoto.classList.remove(
-                    'ativo'
-                );
-
-                document.body.style.overflow =
-                    '';
+                modalFoto.classList.remove('ativo');
+                document.body.style.overflow = '';
             }
         }
-
-        // =================================================
-        // BOTÃO X
-        // =================================================
 
         if (fecharModal) {
-
-            fecharModal.addEventListener(
-                'click',
-                fecharZoom
-            );
+            fecharModal.addEventListener('click', fecharZoom);
         }
-
-        // =================================================
-        // CLICAR FORA DA FOTO
-        // =================================================
 
         if (modalFoto) {
-
-            modalFoto.addEventListener(
-                'click',
-                evento => {
-
-                    if (
-                        evento.target === modalFoto
-                    ) {
-
-                        fecharZoom();
-
-                    }
-                }
-            );
-        }
-
-        // =================================================
-        // FOTO ANTERIOR
-        // =================================================
-
-        if (fotoAnterior) {
-
-            fotoAnterior.addEventListener(
-                'click',
-                evento => {
-
-                    evento.stopPropagation();
-
-                    indiceFotoAtual--;
-
-                    if (
-                        indiceFotoAtual < 0
-                    ) {
-
-                        indiceFotoAtual =
-                            imovel.fotos.length - 1;
-                    }
-
-                    if (fotoZoom) {
-
-                        fotoZoom.src =
-                            caminhoFoto(
-                                indiceFotoAtual
-                            );
-                    }
-                }
-            );
-        }
-
-        // =================================================
-        // PRÓXIMA FOTO
-        // =================================================
-
-        if (proximaFoto) {
-
-            proximaFoto.addEventListener(
-                'click',
-                evento => {
-
-                    evento.stopPropagation();
-
-                    indiceFotoAtual++;
-
-                    if (
-                        indiceFotoAtual >=
-                        imovel.fotos.length
-                    ) {
-
-                        indiceFotoAtual = 0;
-                    }
-
-                    if (fotoZoom) {
-
-                        fotoZoom.src =
-                            caminhoFoto(
-                                indiceFotoAtual
-                            );
-                    }
-                }
-            );
-        }
-
-        // =================================================
-        // CONTROLE PELO TECLADO
-        // =================================================
-
-        document.addEventListener(
-            'keydown',
-            evento => {
-
-                if (
-                    !modalFoto ||
-                    !modalFoto.classList.contains(
-                        'ativo'
-                    )
-                ) {
-
-                    return;
-                }
-
-                // ESC
-                if (
-                    evento.key === 'Escape'
-                ) {
-
+            modalFoto.addEventListener('click', evento => {
+                if (evento.target === modalFoto) {
                     fecharZoom();
+                }
+            });
+        }
 
+        // FOTO ANTERIOR
+        if (fotoAnterior) {
+            fotoAnterior.addEventListener('click', evento => {
+                evento.stopPropagation();
+
+                indiceFotoAtual--;
+
+                if (indiceFotoAtual < 0) {
+                    indiceFotoAtual = imovel.fotos.length - 1;
                 }
 
-                // SETA ESQUERDA
-                if (
-                    evento.key === 'ArrowLeft'
-                ) {
+                if (fotoZoom) {
+                    fotoZoom.src = caminhoFoto(indiceFotoAtual);
+                }
+            });
+        }
 
-                    indiceFotoAtual--;
+        // PRÓXIMA FOTO
+        if (proximaFoto) {
+            proximaFoto.addEventListener('click', evento => {
+                evento.stopPropagation();
 
-                    if (
-                        indiceFotoAtual < 0
-                    ) {
+                indiceFotoAtual++;
 
-                        indiceFotoAtual =
-                            imovel.fotos.length - 1;
-                    }
-
-                    if (fotoZoom) {
-
-                        fotoZoom.src =
-                            caminhoFoto(
-                                indiceFotoAtual
-                            );
-                    }
+                if (indiceFotoAtual >= imovel.fotos.length) {
+                    indiceFotoAtual = 0;
                 }
 
-                // SETA DIREITA
-                if (
-                    evento.key === 'ArrowRight'
-                ) {
-
-                    indiceFotoAtual++;
-
-                    if (
-                        indiceFotoAtual >=
-                        imovel.fotos.length
-                    ) {
-
-                        indiceFotoAtual = 0;
-                    }
-
-                    if (fotoZoom) {
-
-                        fotoZoom.src =
-                            caminhoFoto(
-                                indiceFotoAtual
-                            );
-                    }
+                if (fotoZoom) {
+                    fotoZoom.src = caminhoFoto(indiceFotoAtual);
                 }
-            }
-        );
-
-        // =================================================
-        // CONSOLE
-        // =================================================
-
-        console.log(
-            'Imóvel carregado:',
-            imovel
-        );
+            });
+        }
 
     } catch (erro) {
-
-        console.error(
-            'Erro ao carregar imóvel:',
-            erro
-        );
+        console.error('Erro ao carregar detalhes do imóvel:', erro);
     }
 }
-
-// =====================================================
-// TROCAR FOTO PRINCIPAL
-// =====================================================
-
-function trocarFoto(caminho) {
-
-    const fotoPrincipal =
-        document.getElementById('fotoPrincipal');
-
-    if (fotoPrincipal) {
-
-        fotoPrincipal.src =
-            caminho;
-    }
-}
-
-// =====================================================
-// INICIAR QUANDO A PÁGINA CARREGAR
-// =====================================================
-
-document.addEventListener(
-    'DOMContentLoaded',
-    () => {
-
-        carregarImoveisHome();
-
-        carregarDetalhesImovel();
-
-    }
-);
