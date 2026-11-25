@@ -183,7 +183,18 @@ async function carregarDetalhesImovel() {
             listaMiniaturas.appendChild(img);
         }
         }
+                            // Foto principal
+        if (fotoPrincipal) fotoPrincipal.src = caminhoFoto(0);
 
+        // Miniaturas
+        if (listaMiniaturas) {
+        listaMiniaturas.innerHTML = "";
+        for(let i = 0; i < imovel.fotos.length; i++){
+            const img = document.createElement("img");
+            img.src = caminhoFoto(i);
+            listaMiniaturas.appendChild(img);
+        }
+        }
         // =================================================
         // VERIFICAR FOTOS
         // =================================================
