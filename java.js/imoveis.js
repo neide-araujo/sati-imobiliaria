@@ -236,7 +236,28 @@ async function carregarDetalhesImovel() {
         }
 
         // Mostrar a primeira foto inicialmente
+           // ====== AQUI VOCÊ COLA O CÓDIGO DAS MINIATURAS ======
+
         mostrarFoto(0);
+    
+    if (listaMiniaturas) {
+    listaMiniaturas.innerHTML = '';
+
+    imovel.fotos.forEach((foto, indice) => {
+        const miniatura = document.createElement('img');
+
+        miniatura.src = caminhoFoto(indice);
+        miniatura.alt = `${imovel.titulo || 'Imóvel'} - Foto ${indice + 1}`;
+        miniatura.className = 'miniatura-imovel';
+
+        miniatura.addEventListener('click', () => {
+        mostrarFoto(indice);
+        });
+
+        listaMiniaturas.appendChild(miniatura);
+    });
+    }
+
 
         // =================================================
         // CRIAR MINIATURAS
